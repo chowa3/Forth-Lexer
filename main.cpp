@@ -6,21 +6,11 @@
 
 #include <iostream>
 #include "Lexer.hpp"
+#define INPUT_FILE "/Users/Chris/Documents/Languages/ForthLexer/ForthLexer/lexer_input2.txt"
+#define TEST_FILE "/Users/Chris/Documents/Languages/ForthLexer/ForthLexer/input.txt"
 
 int main(int argc, const char * argv[]) {
-	Token x("name", WORD);
-	x.increment();
-	x.print(cout);
-
-	Token y("name", NUMBER);
-	y.print(cout);
-
-	Token z("name", STRING);
-	z.print(cout);
-	
-	Lexer L("/Users/Chris/Documents/Languages/ForthLexer/ForthLexer/input.txt");
+	Lexer L(INPUT_FILE);
 	L.doLex();
-	L.print(cout);
-	cout << "It works!\n";
 	return 0;
 }
