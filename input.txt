@@ -1,3 +1,5 @@
 \ Print the first n Fibonacci numbers
-( This is a comment )
-."1 23"  123  word  word1
+1 1
+."123" word word1 123 123 456
+( initialize for 1st 2 terms of series. )
+."Print the first"
