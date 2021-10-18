@@ -7,10 +7,6 @@
 
 const char* tokens[6] = {"word ", "number ", "string "};
 
-Token::Token(){
-
-}
-
 //Step 3.1.1 and 3.1.2
 Token::Token(string name, TokenType type): name(name), type(type) {
 	count = 1;
@@ -18,7 +14,7 @@ Token::Token(string name, TokenType type): name(name), type(type) {
 
 //Step 3.1.3
 ostream& Token::print(ostream& out){
-	out << setw(10) << left << name << setw(10) << tokens[type] << " " << count << endl;
+	out << tokens[type] << '\t' << count << endl;
 	return out;
 }
 

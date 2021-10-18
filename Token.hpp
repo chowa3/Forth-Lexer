@@ -14,14 +14,12 @@ class Token{
 		string name;
 		TokenType type;
 		
-		
 	public:
-		Token();
-		Token(string token, TokenType type);
+		Token() = default;
+		Token(string name, TokenType type);
 		~Token() = default;
 		ostream& print(ostream& out);
 		void increment();
-		int getCount();
 		int count;
 };
 inline ostream& operator<<(ostream& out, Token& c){ return c.print(out); }
