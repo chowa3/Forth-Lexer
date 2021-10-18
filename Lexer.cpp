@@ -5,6 +5,7 @@
 //
 
 #include "Lexer.hpp"
+#define OUTPUT_FILE "/Users/Chris/Documents/Languages/ForthLexer/ForthLexer/output.txt"
 
 Lexer::Lexer(string fname){
 	state = START; //Needed to start the process. TESTED: WORKING.
@@ -16,7 +17,7 @@ Lexer::Lexer(string fname){
 	}
 	
 	//Output symbol table in human readable format.
-	fileOut.open ("/Users/Chris/Documents/Languages/ForthLexer/ForthLexer/output.txt", ios_base::out); //open file in write mode.
+	fileOut.open (OUTPUT_FILE, ios_base::out); //open file in write mode.
 	if (fileOut.is_open() != true){
 		fatal("Error: could not open SymbolTable.txt. \n");
 	} else {
@@ -29,6 +30,8 @@ Lexer::Lexer(string fname){
 
 Lexer::~Lexer() {
 	fileIn.close();
+	print(cout);
+	print(fileOut);
 	fileOut.close();
 };
 
@@ -36,8 +39,9 @@ Lexer::~Lexer() {
 ostream& Lexer::print(ostream& out){
 	//map<string, Token> tMap
 	//Auto was the simplest way to get this to work.
+	out << "------------------------------------------------------------" << endl;
 	for (auto& it : tMap){
-		out << it.first << " " << it.second << endl;
+		out << setw(30) << left << it.first << " " << it.second << endl;
 	}
 	return out;
 }
@@ -50,8 +54,6 @@ void Lexer::doLex(){
 		switch(state) {
 			case START: doStart(); //Step 4.1
 				break;
-			case DONE:
-				break;
 			case SLASH_PENDING: slashPending(); //Step 4.2
 				break;
 			case ACQUIRE_SLASH: acquireSlash(); //Step 4.3
@@ -60,13 +62,11 @@ void Lexer::doLex(){
 				break;
 			case ACQUIRE_TOKEN: acquireToken(); //Step 4.6
 				break;
-			case ACQUIRE_COMMENT: // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<NOT NEEDED?
-				break;
 			case ACQUIRE_STRING: acquireString(); //Step 4.7
 				break;
 			case PAREN_PENDING:
 				//Step 4.4
-				if (currentChar == ' '){
+				if (currentChar == ' ' || currentChar != '\t'){
 					state = ACQUIRE_PAREN;
 					fileOut << currentChar;
 				} else {
@@ -81,7 +81,7 @@ void Lexer::doLex(){
 
 //Step 3.2.7
 void Lexer::doStart(){
-	if (currentChar == ' '){
+	if (currentChar == ' ' || currentChar == '\t'){
 		//Do nothing to break out of switch statement in calling function.
 	}else if (currentChar == '\\' ){
 		state = SLASH_PENDING;
@@ -91,7 +91,7 @@ void Lexer::doStart(){
 		fileOut << currentChar;
 	}else{
 		state = ACQUIRE_TOKEN;
-		if (currentChar != ' ' && currentChar != '\n'){
+		if (currentChar != ' ' && currentChar != '\n' && currentChar != '\t'){
 			tokenString.push_back(currentChar);
 		}
 	}
@@ -100,7 +100,7 @@ void Lexer::doStart(){
 //Step 4.2
 void Lexer::slashPending(){
 	fileOut << currentChar;
-	if (currentChar==' '){
+	if (currentChar==' ' || currentChar != '\t'){
 		state = ACQUIRE_SLASH;
 	} else {
 		state = ACQUIRE_TOKEN;
@@ -109,7 +109,6 @@ void Lexer::slashPending(){
 
 //Step 4.3
 void Lexer::acquireSlash(){
-	//TESTED: WORKING
 	char buffer[256];
 	fileOut << currentChar;
 	fileIn.getline(buffer, 256, '\n');
@@ -119,7 +118,6 @@ void Lexer::acquireSlash(){
 
 //Step 4.5
 void Lexer::acquireParen(){
-	//TESTED: WORKING
 	char buffer[256];
 	fileOut << currentChar;
 	fileIn.getline(buffer, 256, ')');
@@ -138,7 +136,8 @@ void Lexer::acquireToken(){
 		state = ACQUIRE_STRING;
 	}
 	
-	if (currentChar != ' ' && currentChar != '\n' && tokenString.compare(dot) != 0){
+	if (currentChar != ' ' && currentChar != '\n' && currentChar != '\t'
+	&& tokenString.compare(dot) != 0){
 		tokenString.push_back(currentChar);
 	} else if (isNumber()){
 		//number
@@ -167,25 +166,34 @@ void Lexer::doToken(string name, TokenType tt){
 void Lexer::acquireString(){
 	//Tokenize the string and drop the quotes.
 	while (true){
-		fileIn.get(currentChar);
 		if (currentChar == '\"'){
 			doToken(tokenString, STRING);
 			state = START;
 			break;
 		}
 		tokenString.push_back(currentChar);
+		fileIn.get(currentChar);
 	}
 }
 
 bool Lexer::isNumber(){
-	bool answer = true; //Starts as a number.
-	//For each element in the array. Test if it is a number.
-	for (int i = 0; i < tokenString.length(); i++){
-		//If a char other than number is found. Enter dead state (always false).
-		if (tokenString[i] <= '0' && tokenString[i] >= '9'){
-			answer = false;
+	bool answer; //Starts as a number.
+	
+	//If the first element is a number. Then all elements must be numbers for it to be a number.
+	if (tokenString[0] >= '0' && tokenString[0] <= '9'){
+		answer = true;
+		//For each element in the array. Test if it is a number.
+		for (int i = 1; i < tokenString.length(); i++){
+			//If a char other than number is found. Enter dead state (always false).
+			if (tokenString[i] < '0' || tokenString[i] > '9'){
+				answer = false;
+				break;
+			}
 		}
+	} else {
+	//If the first element is a letter. Then it is a word.
+		answer = false;
 	}
+	
 	return answer;
 }
-

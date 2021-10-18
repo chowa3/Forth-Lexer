@@ -2,4 +2,66 @@ Chris Howard
 Lab 3: Forth Lexer
 Comments
 \ Print the first n Fibonacci numbers
-( This is a comment )
+( n >>> )
+( initialize for 1st 2 terms of series. )
+( and print those two terms. )
+( bring loop limit to top of stack. )
+( set up counted loop from one to n. )
+( make a copy of newest term for later use. )
+( bring 2nd newest term to top of stack. )
+( new term is sum of 2 previous terms.  Print it. )
+( return to top of loop. )
+\ End of Test File for Lexer
+------------------------------------------------------------
+                               word 	11
+
+"                              word 	1
+
++                              word 	1
+
+.                              word 	4
+
+."                             word 	4
+
+1                              number 	4
+
+10                             number 	1
+
+100                            number 	1
+
+2                              number 	2
+
+2dup                           word 	1
+
+5                              number 	1
+
+:                              word 	1
+
+;                              word 	1
+
+<                              word 	1
+
+CR                             word 	3
+
+Fibonacci numbers.             string 	1
+
+Print the first                string 	1
+
+do                             word 	1
+
+dup                            word 	4
+
+else                           word 	1
+
+fib                            word 	6
+
+if                             word 	1
+
+loop                           word 	1
+
+number must be 2 or greater.   string 	1
+
+rot                            word 	2
+
+then                           word 	1
+
